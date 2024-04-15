@@ -92,22 +92,31 @@ def plot_fourier_spectrum(image_path, threshold=100):
 
     plt.show()
 
-def process_image(image_path):
+def process_image(image_path, blindness_type='Protanopia', rate=5, saturation_factor=4):
     # Open the image using PIL
     img = Image.open(image_path)
     rgb_image = np.array(img)
 
     # Perform color blindness simulation
-    simulated_rgb = lms_daltonization(rgb_image, type='Protanopia', rate=5)
+    simulated_rgb = lms_daltonization(rgb_image, type=blindness_type, rate=rate)
 
     # Enhance saturation
-    saturated_rgb_image = enhance_saturation(simulated_rgb, saturation_factor=4)
+    saturated_rgb_image = enhance_saturation(simulated_rgb, saturation_factor=saturation_factor)
 
     # Save the processed image
     processed_image = Image.fromarray(saturated_rgb_image)
     processed_image.save('processed_image.jpg')
 
 if __name__ == '__main__':
-    input_image_path = 'it.jpeg'
+    # Prompt user for input
+    input_image_path = input("Enter path to input image: ")
+    blindness_type = input("Enter type of color blindness (Protanopia/Deuteranopia/Tritanopia): ")
+
+    # Validate color blindness type
+    if blindness_type not in ['Protanopia', 'Deuteranopia', 'Tritanopia']:
+        print("Invalid color blindness type. Supported types are Protanopia, Deuteranopia, Tritanopia.")
+        exit(1)
+
+    # Process the image
+    process_image(input_image_path, blindness_type)
     plot_fourier_spectrum(input_image_path, threshold=100)
-    process_image(input_image_path)
